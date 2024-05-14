@@ -46,6 +46,11 @@ class Bullet extends Phaser.Physics.Arcade.Image
 
 class Game extends Phaser.Scene
 {
+    constructor ()
+    {
+        super({ key: 'Game' });
+        window.GAME = this;
+    }
     lastFired = 0;
 
     preload ()
@@ -56,7 +61,7 @@ class Game extends Phaser.Scene
     }
     create ()
     {    
-        //  Prepare some spritesheets and animations
+        //  Prepare some spritesheets and animations 
         this.textures.addSpriteSheetFromAtlas('mine-sheet', { atlas: 'space', frame: 'mine', frameWidth: 64 });
         this.textures.addSpriteSheetFromAtlas('asteroid1-sheet', { atlas: 'space', frame: 'asteroid1', frameWidth: 96 });
         this.textures.addSpriteSheetFromAtlas('asteroid2-sheet', { atlas: 'space', frame: 'asteroid2', frameWidth: 96 });
@@ -69,8 +74,7 @@ class Game extends Phaser.Scene
         this.anims.create({ key: 'asteroid3-anim', frames: this.anims.generateFrameNumbers('asteroid3-sheet', { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
         this.anims.create({ key: 'asteroid4-anim', frames: this.anims.generateFrameNumbers('asteroid4-sheet', { start: 0, end: 23 }), frameRate: 20, repeat: -1 });
 
-        //  World size is 8000 x 6000
-        this.bg = this.add.tileSprite(400, 300, 800, 600, 'background').setScrollFactor(0);
+        this.bg = this.add.tileSprite(600, 400, 1200, 800, 'background').setScrollFactor(0);
 
         //  Add our planets, etc
         this.add.image(512, 680, 'space', 'blue-planet').setOrigin(0).setScrollFactor(0.6);
@@ -83,10 +87,10 @@ class Game extends Phaser.Scene
 
         for (let i = 0; i < 8; i++)
         {
-            this.add.image(Phaser.Math.Between(0, 8000), Phaser.Math.Between(0, 6000), 'space', 'eyes').setBlendMode(1).setScrollFactor(0.8);
+            this.add.image(Phaser.Math.Between(0, 9000), Phaser.Math.Between(0, 7000), 'space', 'eyes').setBlendMode(1).setScrollFactor(0.8);
         }
 
-        this.stars = this.add.tileSprite(400, 300, 800, 600, 'stars').setScrollFactor(0);
+        this.stars = this.add.tileSprite(600, 400, 1200, 800, 'stars').setScrollFactor(0);
 
         const emitter = this.add.particles(0, 0, 'space', {
             frame: 'blue',
@@ -188,3 +192,5 @@ class Game extends Phaser.Scene
         this.stars.tilePositionY += this.ship.body.deltaY() * 2;
     }
 }
+
+

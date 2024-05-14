@@ -24,7 +24,7 @@ let config = {
     },
     width: 1200,
     height: 800,
-    scene: [ Game, Bullet] 
+    scene: [ MainMenu, Game, GameOver]
 }
 
 // Global variable to hold sprites
