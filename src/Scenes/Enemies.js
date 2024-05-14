@@ -1,6 +1,6 @@
 class EnemyBullet extends Phaser.Physics.Arcade.Image {
     constructor(scene, x, y) {
-      super(scene, x, y, 'laserBlack'); // Replace 'laserBlack' with your actual bullet sprite key
+      super(scene, x, y, 'laserBlack'); 
       this.scene = scene;
   
       this.setBlendMode(1);
@@ -18,6 +18,27 @@ class EnemyBullet extends Phaser.Physics.Arcade.Image {
     }
   }
   
+  class EnemyBullets extends Phaser.Physics.Arcade.Image {
+    constructor(scene, x, y) {
+      super(scene, x, y, 'laserBlack'); // Replace 'laserBlack' with your actual bullet sprite key
+      this.scene = scene;
+  
+      this.setBlendMode(1);
+      this.setScale(0.5); // Adjust bullet size
+      this.setVelocity(0, 400); // Adjust bullet speed
+      
+      scene.physics.world.enableBody(this);
+      this.body.setAllowGravity(false);
+    }
+  
+    update(time, delta) {
+      if (this.y > this.scene.game.config.height) {
+        this.destroy();
+      }
+    }
+  }
+  
+  
 
 class Enemies extends Phaser.Scene {
     enemyBullets;
@@ -31,27 +52,30 @@ class Enemies extends Phaser.Scene {
     }
   
     preload() {
-      // Load enemy sprites (assuming consistent naming)
+      // Load enemy sprites 
       for (let i = 1; i <= 5; i++) {
-        this.load.image(`enemyBlack`, `/assets/enemyBlack1.png`);
-        this.load.image(`enemyRed`, `/assets/boss.png`);
-        this.load.image(`enemyBlue`, `/assets/enemyBlue.png`);
-        this.load.image(`enemyYellow`, `/assets/enemyYellow.png`);
+        this.load.image(`enemyBlack`, `./assets/enemyBlack1.png`);
+        this.load.image(`enemyRed`, `./assets/boss.png`);
+        this.load.image(`enemyBlue`, `./assets/enemyBlue4.png`);
+        this.load.image(`enemyYellow`, "./assets/ufoGreen.png");
+        console.log();
+
       }
+
   
       // Load bullet sprites (adjust based on attack types)
-      this.load.image('laserBlack', '/assets/enemyBlack1.png');
-      this.load.image('laserRed', '/assets/laserRed09.png'); // Homing missile (replace if needed)
-      this.load.image('laserGreen', '/assets/laserGreen14.png'); // Spread shot (replace if needed)
-      this.load.image('laserBlue', '/assets/laserBlue05.png');
+      this.load.image('laserBlack', './assets/laserRed09.png');
+      this.load.image('laserRed', './assets/spaceMissiles_006.png'); // Homing missile 
+      this.load.image('laserGreen', './assets/laserGreen14.png'); // Spread shot 
+      this.load.image('laserBlue', './assets/laserBlue05.png');
     }
     create() {
-        this.stars = this.add.blitter(0, 0, 'starfield'); // Assuming you have a starfield loaded
+        this.stars = this.add.blitter(0, 0, 'starfield');
         this.stars.create(0, 0);
         this.stars.create(0, -512);
     
         this.enemyBullets = this.add.existing(new EnemyBullets(this.physics.world, this, { name: 'enemyBullets' }));
-        this.enemyBullets.createMultiple({ key: 'laserBlack', quantity: 5 }); // Replace with actual laser sprite key
+        this.enemyBullets.createMultiple({ key: 'laserBlack', quantity: 5 }); 
     
         this.enemies = this.physics.add.group();
     
