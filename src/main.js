@@ -24,7 +24,7 @@ let config = {
     },
     width: 1200,
     height: 800,
-    scene: [ MainMenu, Game, GameOver]
+    scene: [ MainMenu, Game, GameOver, Enemies,]
 };
 
 
