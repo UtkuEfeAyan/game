@@ -157,7 +157,7 @@ class Game extends Phaser.Scene
         });
 
          ////enemeis code
-        this.enemyBullets = this.physics.add.group({
+        this.enemyBullet = this.physics.add.group({
             classType: EnemyBullet,
             maxSize: 50, // Adjust max number of enemy bullets
             runChildUpdate: true
@@ -189,7 +189,7 @@ class Game extends Phaser.Scene
 
 
         //Player-enemy bullet collision (damage player)  eenemy thingy
-        this.physics.add.overlap(this.ship, this.enemyBullets, (ship, bullet) => {
+        this.physics.add.overlap(this.ship, this.enemyBullet, (ship, bullet) => {
             bullet.destroy();
             this.handlePlayerHit(); // Handle player damage (reduce health, explosion animation)
             });
