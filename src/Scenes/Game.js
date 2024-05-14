@@ -2,7 +2,7 @@ class Bullet extends Phaser.Physics.Arcade.Image
 {
     constructor (scene)
     {
-        super(scene, 0, 0, 'space', 'blaster');
+        super(scene, 0, 0, "space", "blaster");
 
         this.setBlendMode(1);
         this.setDepth(1);
@@ -48,52 +48,76 @@ class Game extends Phaser.Scene
 {
     constructor ()
     {
-        super({ key: 'Game' });
+        super({ key: "Game" });
         window.GAME = this;
     }
     lastFired = 0;
 
     preload ()
     {
-        this.load.image('background', 'assets/space/nebula.jpg');
-        this.load.image('stars', 'assets/space/stars.png');
-        this.load.atlas('space', 'assets/space/space.png', 'assets/space/space.json');
+        this.load.image("background", "assets/space/nebula.jpg");
+        this.load.image("stars", "assets/space/stars.png");
+        this.load.atlas("space", "assets/space/space.png", "assets/space/space.json");
     }
     create ()
-    {    
-        //  Prepare some spritesheets and animations 
-        this.textures.addSpriteSheetFromAtlas('mine-sheet', { atlas: 'space', frame: 'mine', frameWidth: 64 });
-        this.textures.addSpriteSheetFromAtlas('asteroid1-sheet', { atlas: 'space', frame: 'asteroid1', frameWidth: 96 });
-        this.textures.addSpriteSheetFromAtlas('asteroid2-sheet', { atlas: 'space', frame: 'asteroid2', frameWidth: 96 });
-        this.textures.addSpriteSheetFromAtlas('asteroid3-sheet', { atlas: 'space', frame: 'asteroid3', frameWidth: 96 });
-        this.textures.addSpriteSheetFromAtlas('asteroid4-sheet', { atlas: 'space', frame: 'asteroid4', frameWidth: 64 });
+    {
 
-        this.anims.create({ key: 'mine-anim', frames: this.anims.generateFrameNumbers('mine-sheet', { start: 0, end: 15 }), frameRate: 20, repeat: -1 });
-        this.anims.create({ key: 'asteroid1-anim', frames: this.anims.generateFrameNumbers('asteroid1-sheet', { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
-        this.anims.create({ key: 'asteroid2-anim', frames: this.anims.generateFrameNumbers('asteroid2-sheet', { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
-        this.anims.create({ key: 'asteroid3-anim', frames: this.anims.generateFrameNumbers('asteroid3-sheet', { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
-        this.anims.create({ key: 'asteroid4-anim', frames: this.anims.generateFrameNumbers('asteroid4-sheet', { start: 0, end: 23 }), frameRate: 20, repeat: -1 });
+        this.bg = this.add.tileSprite(600, 400, 1200, 800, "background").setScrollFactor(0);
 
-        this.bg = this.add.tileSprite(600, 400, 1200, 800, 'background').setScrollFactor(0);
+        this.textures.addSpriteSheetFromAtlas("mine-sheet", { atlas: "space", frame: "mine", frameWidth: 64 });
+        this.textures.addSpriteSheetFromAtlas("asteroid1-sheet", { atlas: "space", frame: "asteroid1", frameWidth: 96 });
+        this.textures.addSpriteSheetFromAtlas("asteroid2-sheet", { atlas: "space", frame: "asteroid2", frameWidth: 96 });
+        this.textures.addSpriteSheetFromAtlas("asteroid3-sheet", { atlas: "space", frame: "asteroid3", frameWidth: 96 });
+        this.textures.addSpriteSheetFromAtlas("asteroid4-sheet", { atlas: "space", frame: "asteroid4", frameWidth: 64 });
 
-        //  Add our planets, etc
-        this.add.image(512, 680, 'space', 'blue-planet').setOrigin(0).setScrollFactor(0.6);
-        this.add.image(2833, 1246, 'space', 'brown-planet').setOrigin(0).setScrollFactor(0.6);
-        this.add.image(3875, 531, 'space', 'sun').setOrigin(0).setScrollFactor(0.6);
-        const galaxy = this.add.image(5345 + 1024, 327 + 1024, 'space', 'galaxy').setBlendMode(1).setScrollFactor(0.6);
-        this.add.image(908, 3922, 'space', 'gas-giant').setOrigin(0).setScrollFactor(0.6);
-        this.add.image(3140, 2974, 'space', 'brown-planet').setOrigin(0).setScrollFactor(0.6).setScale(0.8).setTint(0x882d2d);
-        this.add.image(6052, 4280, 'space', 'purple-planet').setOrigin(0).setScrollFactor(0.6);
+        this.add.image(512, 680, "space", "blue-planet").setOrigin(0).setScrollFactor(0.6);
+        this.add.image(2833, 1246, "space", "brown-planet").setOrigin(0).setScrollFactor(0.6);
+        this.add.image(3875, 531, "space", "sun").setOrigin(0).setScrollFactor(0.6);
+        const galaxy = this.add.image(5345 + 1024, 327 + 1024, "space", "galaxy").setBlendMode(1).setScrollFactor(0.6);
+        this.add.image(908, 3922, "space", "gas-giant").setOrigin(0).setScrollFactor(0.6);
+        this.add.image(3140, 2974, "space", "brown-planet").setOrigin(0).setScrollFactor(0.6).setScale(0.8).setTint(0x882d2d);
+        this.add.image(6052, 4280, "space", "purple-planet").setOrigin(0).setScrollFactor(0.6);
+
+        this.anims.create({ key: "mine-anim", frames: this.anims.generateFrameNumbers("mine-sheet", { start: 0, end: 15 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: "asteroid1-anim", frames: this.anims.generateFrameNumbers("asteroid1-sheet", { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: "asteroid2-anim", frames: this.anims.generateFrameNumbers("asteroid2-sheet", { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: "asteroid3-anim", frames: this.anims.generateFrameNumbers("asteroid3-sheet", { start: 0, end: 24 }), frameRate: 20, repeat: -1 });
+        this.anims.create({ key: "asteroid4-anim", frames: this.anims.generateFrameNumbers("asteroid4-sheet", { start: 0, end: 23 }), frameRate: 20, repeat: -1 });
+        
+        ////enemeis code
+        this.enemyBullets = this.physics.add.group({
+            classType: EnemyBullet,
+            maxSize: 50, // Adjust max number of enemy bullets
+            runChildUpdate: true
+          });
+          this.enemies = this.physics.add.group();
+
+          // Define enemy types (adjust properties as needed)
+        this.enemyTypes = [
+            { animationPrefix: 'enemyBlack', bullet: 'laserBlack', attack: this.enemyFireLaser },
+            { animationPrefix: 'enemyRed', bullet: 'laserRed', attack: this.enemyFireHomingMissile }, // Replace with your attack function
+            { animationPrefix: 'enemyYellow', bullet: 'laserGreen', attack: this.enemyFireSpreadShot }, // Replace with your attack function
+            { animationPrefix: 'enemyBlue', bullet: 'laserBlue', attack: this.enemyFireSlowShot }, // Replace with your attack function (optional)
+        ];
+  
+        this.spawnPoints = [
+            { x: this.game.config.width / 4, y: this.game.config.height / 4 },
+            { x: this.game.config.width * 3 / 4, y: this.game.config.height / 4 },
+            { x: this.game.config.width / 4, y: this.game.config.height * 3 / 4 },
+            { x: this.game.config.width * 3 / 4, y: this.game.config.height * 3 / 4 },
+        ];
+
+
 
         for (let i = 0; i < 8; i++)
         {
-            this.add.image(Phaser.Math.Between(0, 9000), Phaser.Math.Between(0, 7000), 'space', 'eyes').setBlendMode(1).setScrollFactor(0.8);
+            this.add.image(Phaser.Math.Between(0, 9000), Phaser.Math.Between(0, 7000), "space", "eyes").setBlendMode(1).setScrollFactor(0.8);
         }
 
-        this.stars = this.add.tileSprite(600, 400, 1200, 800, 'stars').setScrollFactor(0);
+        this.stars = this.add.tileSprite(600, 400, 1200, 800, "stars").setScrollFactor(0);
 
-        const emitter = this.add.particles(0, 0, 'space', {
-            frame: 'blue',
+        const emitter = this.add.particles(0, 0, "space", {
+            frame: "blue",
             speed: 100,
             lifespan: {
                 onEmit: (particle, key, t, value) =>
@@ -114,7 +138,7 @@ class Game extends Phaser.Scene
                 }
             },
             scale: { start: 0.6, end: 0 },
-            blendMode: 'ADD'
+            blendMode: "ADD"
         });
 
         this.bullets = this.physics.add.group({
@@ -123,7 +147,7 @@ class Game extends Phaser.Scene
             runChildUpdate: true
         });
 
-        this.ship = this.physics.add.image(4000, 3000, 'space', 'ship').setDepth(2);
+        this.ship = this.physics.add.image(4000, 3000, "space", "ship").setDepth(2);
 
         this.ship.setDrag(300);
         this.ship.setAngularDrag(400);
@@ -136,15 +160,23 @@ class Game extends Phaser.Scene
         this.cursors = this.input.keyboard.createCursorKeys();
         this.fire = this.input.keyboard.addKey(Phaser.Input.Keyboard.KeyCodes.SPACE);
 
-        this.add.sprite(4300, 3000).play('asteroid1-anim');
+        this.add.sprite(4300, 3000).play("asteroid1-anim");
 
         this.tweens.add({
             targets: galaxy,
             angle: 360,
             duration: 100000,
-            ease: 'Linear',
+            ease: "Linear",
             loop: -1
         });
+
+
+        //Player-enemy bullet collision (damage player)  eenemy thingy
+        this.physics.add.overlap(this.player, this.enemyBullets, (player, bullet) => {
+            bullet.destroy();
+            this.handlePlayerHit(); // Handle player damage (reduce health, explosion animation)
+            });
+        
     }
 
     update (time, delta)
@@ -191,6 +223,25 @@ class Game extends Phaser.Scene
         this.stars.tilePositionX += this.ship.body.deltaX() * 2;
         this.stars.tilePositionY += this.ship.body.deltaY() * 2;
     }
+    handlePlayerHit() {
+        // Reduce player health
+        this.player.health -= 10; // Adjust damage amount
+      
+        // Play explosion animation (assuming 'explosion' sprite exists)
+        const explosion = this.add.sprite(this.player.x, this.player.y, 'explosion');
+        explosion.play('explode'); // Assuming 'explode' animation exists
+        explosion.on('animationcomplete', () => explosion.destroy());
+      
+        // Check for game over
+        if (this.player.health <= 0) {
+          this.scene.pause(); // Pause current game scene
+          this.scene.launch('gameover'); // Launch the game over scene
+        }
+      
+        // Optional: Visual/Audio feedback
+        this.cameras.main.shake(100, 0.01); // Add screen shake effect
+        this.sound.play('playerHit'); // Play sound effect (assuming sound exists)
+      }
+        
+
 }
-
-
