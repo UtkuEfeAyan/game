@@ -1,10 +1,9 @@
+**Build A Path**
 
+A template project to be used when creating a program which will allow the creation
+of a Phaser path by making a series of mouse clicks.
 
+Look for TODO items in src/Scenes/Path.js and complete these. There is pseudocode in comments
+next to these TODO items.
 
-Assets
-Space themed: https://kenney.nl/assets/space-shooter-redux
-https://kenney.nl/assets/space-shooter-extension
-Alien UFOs: https://kenney.nl/assets/alien-ufo-pack
-Sci-fi sounds https://kenney.nl/assets/sci-fi-sounds
-Digital audio(maybe) https://kenney.nl/assets/digital-audio
-and different types of non-copyrighted music for each of the dinmension(possibly)
+Uses Kenny Assets "[Space Shooter Redux](https://kenney.nl/assets/space-shooter-redux)" set, with gratitude.
