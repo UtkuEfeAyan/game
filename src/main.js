@@ -17,14 +17,14 @@ let config = {
     parent: 'phaser-game',
     type: Phaser.AUTO,
     physics: {
-		default: 'arcade',
-		arcade: {
-			debug: false,
+		  default: 'arcade',
+		  arcade: {
+			  debug: false,
 		  }
     },
     width: 1200,
     height: 800,
-    scene: [ MainMenu, Game, GameOver, Enemies ]
+    scene: [ MainMenu, Game, GameOver]
 };
 
 
