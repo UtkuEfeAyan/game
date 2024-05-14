@@ -35,7 +35,8 @@ the upgrade system will need to be implemented, your ship will just 1 life, howe
 the shield will be recharged after every new dimension/dinmensional door. 
 if you dies in the fight the screeen goes black(and/or shows you your score and dimensional shards) then teleports you back to the main hub or the menu screen).
 
-sketch
+game https://github.com/UtkuEfeAyan/game/tree/f9d9dfa7c3553b3a6bd3ea6dc99bd29c9cd849d9/the2Bgame
+
 
 
 Assets
