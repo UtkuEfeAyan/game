@@ -24,6 +24,7 @@ class Enemies extends Phaser.Scene {
     enemyFiringTimer;
     enemyTypes; // Array to store different enemy types
     spawnPoints; // Array of spawn points for enemies
+    weight;
   
     constructor() {
       super({ key: 'Enemies' }); // Assuming key for the scene
@@ -54,10 +55,29 @@ class Enemies extends Phaser.Scene {
     
         // Define enemy types with properties like animation prefix, bullet type, and attack implementation
         this.enemyTypes = [
-          { animationPrefix: 'enemyBlack', bullet: 'laserBlack', attack: this.enemyFireLaser }, 
-          { animationPrefix: 'enemyRed', bullet: 'laserRed', attack: this.enemyFireHomingMissile }, 
-          { animationPrefix: 'enemyYellow', bullet: 'laserGreen', attack: this.enemyFireSpreadShot }, 
-          { animationPrefix: 'enemyBlue', bullet: 'laserBlue', attack: this.enemyFireBlue }, 
+          { 
+            animationPrefix: 'enemyBlack', 
+            bullet: 'laserBlack', 
+            attack: () => this.enemyFireLaser(), 
+            weight: 0.25 
+          }, // Black enemy weight
+          { 
+            animationPrefix: 'enemyRed', 
+            bullet: 'laserRed', 
+            attack: () => this.enemyFireHomingMissile(), 
+            weight: 0.1 
+          }, // Red enemy weight (lowest)
+          { 
+            animationPrefix: 'enemyYellow', 
+            bullet: 'laserGreen', 
+            attack: () => this.enemyFireSpreadShot(), 
+            weight: 0.25 }, // Yellow enemy weight
+          { 
+            animationPrefix: 'enemyBlue', 
+            bullet: 'laserBlue', 
+            attack: () => this.enemyFireBlue(), 
+            weight: 0.4 
+          }, // Blue enemy weight (highest
         ];
     
         this.spawnPoints = [
@@ -71,6 +91,13 @@ class Enemies extends Phaser.Scene {
           delay: 1000, // Adjust spawn rate
           loop: true,
           callback: this.spawnEnemy,
+        });
+
+        const fireDelay = Math.floor(Math.random() * 2000) + 1000; // Adjust firing interval
+        this.time.addEvent({
+          delay: fireDelay,
+          loop: true,   // Make it repeat
+          callback: () => this.enemyFire(enemy, this.enemyBullet, enemyType, this.ship) // Function to be called on each interval
         });
     
         this.physics.world.on('worldbounds', this.handleWorldBounds, this);
@@ -101,23 +128,40 @@ class Enemies extends Phaser.Scene {
             // Handle enemy death (e.g., spawn new enemy, possible score)
           }
         });
+
+
       }
+
       spawnEnemy() {
-        const randomTypeIndex = Math.floor(Math.random() * this.enemyTypes.length);
-        const enemyType = this.enemyTypes[randomTypeIndex];
-    
+        const totalWeight = this.enemyTypes.reduce((acc, enemy) => acc + enemy.weight, 0); // Calculate total weight
+      
+        const randomValue = Math.random() * totalWeight;
+        let accumulatedWeight = 0;
+        let chosenTypeIndex = 0;
+      
+        for (let i = 0; i < this.enemyTypes.length; i++) {
+          accumulatedWeight += this.enemyTypes[i].weight;
+          if (randomValue <= accumulatedWeight) {
+            chosenTypeIndex = i;
+            break;
+          }
+        }
+      
+        const enemyType = this.enemyTypes[chosenTypeIndex];
         const randomSpawnPoint = Phaser.Math.RND.pick(this.spawnPoints);
-    
+      
         const enemy = this.physics.add.sprite(randomSpawnPoint.x, randomSpawnPoint.y, `${enemyType.animationPrefix}1`);
         enemy.setBodySize(160, 64);
         enemy.state = 5; // Hit points
-    
+      
         this.setEnemyPathTowardsPlayer(enemy); // Set enemy movement
-    
-        // Enemy firing logic (demonstrates different attacks)
-        const fireDelay = Math.floor(Math.random() * 2000) + 1000; // Random delay between attacks
+      
+        // Enemy firing logic
+        const fireDelay = Math.floor(Math.random() * 2000) + 1000;
         this.time.addEvent({ delay: fireDelay, loop: true, callback: () => this.enemyFire(enemy, this.enemyBullet, enemyType) });
       }
+      
+      
     
       setEnemyPathTowardsPlayer(enemy) {
         const direction = new Phaser.Math.Vector2(this.ship.x - enemy.x, this.ship.y - enemy.y).normalize();
@@ -127,13 +171,13 @@ class Enemies extends Phaser.Scene {
       }
     
       
-        enemyFire(enemy, enemyBullet, enemyType) {
+      enemyFire(enemy, enemyBullet, enemyType, ship) {
           switch (enemyType.bullet) {
             case 'laserBlack':
               this.enemyFireLaser(enemy, enemyBullet);
               break;
             case 'laserRed':
-              this.enemyFireHomingMissile(enemy, enemyBullet);
+              this.enemyFireHomingMissile(enemy, enemyBullet, ship);
               break;
             case 'laserGreen':
               this.enemyFireSpreadShot(enemy, enemyBullet);
@@ -144,82 +188,48 @@ class Enemies extends Phaser.Scene {
           }
         }
       
-        enemyFireLaser(enemy, enemyBullet) {
+      enemyFireLaser(enemy, enemyBullet) {
           // Standard laser 
-          const bullet = enemyBullet.create(enemy.x, enemy.y, 'laserBlack'); 
-          bullet.body.setSize(4, 16);
-          bullet.setVelocity(enemy.body.velocity.x * 2, enemy.body.velocity.y * 2);
-          bullet.setLifetime(2000); // Adjust bullet lifetime
-        }
+        const bullet = enemyBullet.create(enemy.x, enemy.y, 'laserBlack'); 
+        bullet.body.setSize(4, 16);
+        bullet.setVelocity(enemy.body.velocity.x * 2, enemy.body.velocity.y * 2);
+        bullet.setLifetime(2000); // Adjust bullet lifetime
+      }
       
-        enemyFireHomingMissile(enemy, enemyBullet) {
-          // Homing missile behavior
-          const bullet = enemyBullet.create(enemy.x, enemy.y, 'laserRed'); // Replace 'laserRed' with your homing missile sprite key
-          bullet.body.setSize(4, 16);
+      enemyFireHomingMissile(enemy, enemyBullet) {
+        // Homing missile behavior
+        const bullet = enemyBullet.create(enemy.x, enemy.y, 'laserRed'); // Replace 'laserRed' with your homing missile sprite key
+        bullet.body.setSize(4, 16);
       
           // Calculate direction towards player
-          const direction = new Phaser.Math.Vector2(this.player.x - bullet.x, this.player.y - bullet.y).normalize();
+        const direction = new Phaser.Math.Vector2(this.ship.x - bullet.x, this.ship.y - bullet.y).normalize();
       
           // Set initial velocity with a slight offset (adjust for desired homing behavior)
-          bullet.setVelocity(direction.x * 200, direction.y * 200);
+        bullet.setVelocity(direction.x * 200, direction.y * 200);
       
           // Update bullet velocity every frame to track player movement (basic homing)
-          this.physics.world.on('update', () => {
-            const newDirection = new Phaser.Math.Vector2(this.player.x - bullet.x, this.player.y - bullet.y).normalize();
-            bullet.setVelocity(newDirection.x * 200, newDirection.y * 200);
-          });
-        }
+        this.physics.world.on('update', () => {
+          const newDirection = new Phaser.Math.Vector2(this.ship.x - bullet.x, this.ship.y - bullet.y).normalize();
+          bullet.setVelocity(newDirection.x * 200, newDirection.y * 200);
+        });
+      }
       
-        enemyFireSpreadShot(enemy, enemyBullet) {
-          for (let i = -1; i <= 1; i++) {
-            const spreadBullet = enemyBullet.create(enemy.x + i * 10, enemy.y, 'laserGreen'); // Replace 'laserGreen' with your spread shot sprite key
-            spreadBullet.body.setSize(4, 16);
-            spreadBullet.setVelocity(enemy.body.velocity.x + (i * 50), enemy.body.velocity.y); // Adjust spread
-            spreadBullet.setLifetime(2000); // Adjust bullet lifetime
-          }
-        }
-      
-        enemyFireBlue(enemy, enemyBullet) {
-          // Slow attack shot
-          const slowBullet = enemyBullet.create(enemy.x, enemy.y, 'laserBlue'); // Replace 'laserBlue' with your slow attack bullet sprite key
-          slowBullet.body.setSize(4, 16);
-          slowBullet.setVelocity(enemy.body.velocity.x, enemy.body.velocity.y); // Inherit enemy's movement (adjust if needed)
-          slowBullet.setLifetime(4000); // Adjust bullet lifetime (longer for slow attack)
+      enemyFireSpreadShot(enemy, enemyBullet) {
+        for (let i = -1; i <= 1; i++) {
+          const spreadBullet = enemyBullet.create(enemy.x + i * 10, enemy.y, 'laserGreen'); // Replace 'laserGreen' with your spread shot sprite key
+          spreadBullet.body.setSize(4, 16);
+          spreadBullet.setVelocity(enemy.body.velocity.x + (i * 50), enemy.body.velocity.y); // Adjust spread
+          spreadBullet.setLifetime(2000); // Adjust bullet lifetime
         }
       }
       
-//enemyFire(enemy, enemyBullet, enemyType) {
-    //switch (enemyType.bullet) {
-      //  case 'laserBlack':
-          // Standard laser 
-      //    const bullet = enemyBullet.create(enemy.x, enemy.y, enemyType.bullet);
-      //    bullet.body.setSize(4, 16);
-       ///   bullet.setVelocity(enemy.body.velocity.x * 2, enemy.body.velocity.y * 2);
-       //   bullet.setLifetime(2000); // Adjust bullet lifetime
-       //   break;
-//      case 'laserRed':
-  ///        // Regular fast shot
-     //     const fastbullet = enemyBullet.create(enemy.x, enemy.y, enemyType.bullet);
-      //    fastbullet.body.setSize(4, 16); // Adjust size as needed
-            
-          // Set bullet velocity
-       //   const direction = new Phaser.Math.Vector2(this.player.x - fastbullet.x, this.player.y - fastbullet.y).normalize(); // Calculate direction towards player
-         // bullet.body.setVelocity(direction.x * bulletSpeed, direction.y * bulletSpeed); // Set velocity based on direction and speed
-            
-   //       break;
-     //   case 'laserGreen':
-       //   for (let i = -1; i <= 1; i++) {
-         //   const spreadBullet = enemyBullet.create(enemy.x + i * 10, enemy.y, enemyType.bullet);
-         //  // spreadBullet.body.setSize(4, 16);
-          //  spreadBullet.setVelocity(enemy.body.velocity.x + (i * 50), enemy.body.velocity.y); // Adjust spread
-          //  spreadBullet.setLifetime(2000); // Adjust bullet lifetime
-         // }
-        //  break;
-     //   case 'laserBlue':
-       //   // Slow attack shot
-        //  const slowBullet = enemyBullet.create(enemy.x, enemy.y, enemyType.bullet);
-         // slowBullet.body.setSize(4, 16);
-         // slowBullet.setVelocity(enemy.body.velocity.x, enemy.body.velocity.y); // Inherit enemy's movement (adjust if needed)
-       //   slowBullet.setLifetime(4000); // Adjust bullet lifetime (longer for slow attack)
-         // break;
-
+      enemyFireBlue(enemy, enemyBullet) {
+        // Slow attack shot
+        const slowBullet = enemyBullet.create(enemy.x, enemy.y, 'laserBlue'); // Replace 'laserBlue' with your slow attack bullet sprite key
+        slowBullet.body.setSize(4, 16);
+        slowBullet.setVelocity(enemy.body.velocity.x, enemy.body.velocity.y); // Inherit enemy's movement (adjust if needed)
+        slowBullet.setLifetime(4000); // Adjust bullet lifetime (longer for slow attack)
+      }
+       
+}
+      
